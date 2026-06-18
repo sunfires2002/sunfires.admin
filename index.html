@@ -37,7 +37,174 @@ function addMatch(){const opp=text('match-opp');if(!opp){alert('対戦相手を�
 function addStanding(){const name=text('std-name');if(!name){alert('チーム名を入力してください');return}const gf=num('std-gf'),ga=num('std-ga');store.standings.push({rank:num('std-rank')||1,name,p:num('std-p'),w:num('std-w'),d:num('std-d'),l:num('std-l'),gf,ga,diff:gf-ga,pts:num('std-pts'),form:text('std-form').toUpperCase()});$('std-name').value='';updatePreview()}
 function addPlayer(){const name=text('player-name');if(!name){alert('選手名を入力してください');return}const found=store.players.find(p=>p.name===name);if(found){found.goals=num('player-goals');found.assists=num('player-assists')}else store.players.push({name,goals:num('player-goals'),assists:num('player-assists')});$('player-name').value='';updatePreview()}
 function getYTId(url){if(!url)return'';try{const u=new URL(url);if(u.hostname.includes('youtu.be'))return u.pathname.slice(1).split('/')[0];if(u.searchParams.get('v'))return u.searchParams.get('v');const p=u.pathname.split('/').filter(Boolean);const n=p.findIndex(x=>['embed','shorts','live'].includes(x));return n>=0?p[n+1]||'':''}catch{return''}}
-function exportHTML(){syncHero();save();const rows=[...store.standings].sort((a,b)=>a.rank-b.rank).map(s=>`<tr${s.name.includes('SUNFIRES')?' class="hi"':''}><td>${s.rank}</td><td>${esc(s.name)}</td><td>${s.p}</td><td>${s.w}</td><td>${s.d}</td><td>${s.l}</td><td>${s.gf}</td><td>${s.ga}</td><td>${s.diff>0?'+'+s.diff:s.diff}</td><td>${esc(s.form)}</td><td>${s.pts}</td></tr>`).join('');const matches=store.matches.map(m=>`<article class="card"><small>${esc(m.date)} / ${esc(m.round)}</small><h3>SUNFIRES ${m.shome} - ${m.saway} ${esc(m.opp)}</h3><div>${m.yt1?`<a href="${esc(m.yt1)}" target="_blank">▶ 前半動画</a>`:''}${m.yt2?`<a href="${esc(m.yt2)}" target="_blank">▶ 後半動画</a>`:''}</div></article>`).join('');const videos=store.matches.flatMap(m=>[['前半',m.yt1],['後半',m.yt2]].map(([label,url])=>{const id=getYTId(url);return id?`<div><h3>${esc(m.round)} vs ${esc(m.opp)} ${label}</h3><iframe src="https://www.youtube.com/embed/${id}" allowfullscreen></iframe></div>`:''})).join('');const goals=[...store.players].filter(p=>p.goals>0).sort((a,b)=>b.goals-a.goals).map((p,i)=>`<tr><td>${i+1}</td><td>${esc(p.name)}</td><td>${p.goals}</td></tr>`).join('');const assists=[...store.players].filter(p=>p.assists>0).sort((a,b)=>b.assists-a.assists).map((p,i)=>`<tr><td>${i+1}</td><td>${esc(p.name)}</td><td>${p.assists}</td></tr>`).join('');const out=`<!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>SUNFIRES</title><style>:root{--o:#f50;--d:#1a0d00;--m:#221200;--w:#fff5f0;--g:#b09080}*{box-sizing:border-box}body{margin:0;background:var(--d);color:var(--w);font-family:system-ui,sans-serif}nav{position:sticky;top:0;background:#160b00eF;padding:16px 5%;border-bottom:2px solid var(--o);font-weight:900;color:var(--o)}header,section{max-width:1100px;margin:auto;padding:64px 5%}h1{font-size:clamp(64px,14vw,150px);line-height:.85;margin:0;color:var(--o)}.stats{display:flex;gap:28px;flex-wrap:wrap;margin-top:32px}.stats b{font-size:36px;display:block}.card{background:var(--m);border:1px solid #5a2e00;padding:18px;margin:12px 0}.card a{display:inline-block;margin:12px 12px 0 0;color:white;background:var(--o);padding:8px 12px;text-decoration:none}table{width:100%;border-collapse:collapse;background:var(--m)}th,td{padding:12px;border-bottom:1px solid #5a2e00;text-align:center}th:nth-child(2),td:nth-child(2){text-align:left}.hi{color:var(--o);font-weight:800}.videos{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px}.videos iframe{width:100%;aspect-ratio:16/9;border:0}.rankings{display:grid;grid-template-columns:1fr 1fr;gap:20px}@media(max-width:700px){.rankings{grid-template-columns:1fr}table{font-size:12px;display:block;overflow:auto}}</style></head><body><nav>SUNFIRES</nav><header><h1>SUN<br>FIRES</h1><div class="stats"><div><b>${store.hero.played}</b>試合</div><div><b>${store.hero.wins}</b>勝利</div><div><b>${store.hero.goals}</b>総得点</div><div><b>${esc(store.hero.rank)}</b>現在順位</div></div></header><section><h2>リーグ順位表</h2><table><thead><tr><th>#</th><th>チーム</th><th>試</th><th>勝</th><th>分</th><th>負</th><th>得</th><th>失</th><th>差</th><th>直近</th><th>勝点</th></tr></thead><tbody>${rows}</tbody></table></section><section><h2>試合結果</h2>${matches||'<p>まだ試合データはありません。</p>'}</section><section><h2>試合動画</h2><div class="videos">${videos||'<p>動画はまだありません。</p>'}</div></section><section><h2>個人成績</h2><div class="rankings"><div><h3>得点ランキング</h3><table>${goals||'<tr><td>データなし</td></tr>'}</table></div><div><h3>アシストランキング</h3><table>${assists||'<tr><td>データなし</td></tr>'}</table></div></div></section></body></html>`;const blob=new Blob([out],{type:'text/html;charset=utf-8'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='index.html';document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1000)}
+function exportHTML() {
+  syncHero();
+  save();
+  store.hero.played = document.getElementById('hero-played').value;
+  store.hero.wins = document.getElementById('hero-wins').value;
+  store.hero.goals = document.getElementById('hero-goals').value;
+  store.hero.rank = document.getElementById('hero-rank').value;
+  save();
+
+  let txtStandings = '';
+  store.standings.sort((a,b)=>a.rank-b.rank).forEach(item => {
+    const isHighlight = item.name.includes('SUNFIRES') ? ' class="rank-highlight"' : '';
+    let badges = '';
+    let chars = item.form.split('');
+    for(let i=0; i<10; i++) {
+      let c = chars[i] || '－';
+      let bClass = c === 'W' ? 'form-W' : c === 'L' ? 'form-L' : c === 'D' ? 'form-D' : 'form-N';
+      badges += `<span class="form-badge ${bClass}">${c}</span>`;
+    }
+    txtStandings += `<tr${isHighlight}><td>${item.rank}</td><td>${item.name}</td><td>${item.p}</td><td>${item.w}</td><td>${item.d}</td><td>${item.l}</td><td>${item.gf}</td><td>${item.ga}</td><td>${item.diff>0?'+'+item.diff:item.diff}</td><td>${badges}</td><td class="pts">${item.pts}</td></tr>\n`;
+  });
+
+  let txtResults = '';
+  store.matches.forEach(item => {
+    const cH = parseInt(item.shome) >= parseInt(item.saway) ? 'win' : 'lose';
+    const cA = parseInt(item.saway) >= parseInt(item.shome) ? 'win' : 'lose';
+    txtResults += `<div class="match-card"><div class="match-meta"><span>${item.date}</span><span class="match-round">${item.round}</span></div><div class="match-teams"><div class="team-name home">SUNFIRES</div><div class="score"><span class="${cH}">${item.shome}</span><span class="score-sep">:</span><span class="${cA}">${item.saway}</span></div><div class="team-name away">${item.opp}</div></div><div class="match-actions">${item.yt1?`<button class="btn-small btn-video" onclick="window.open('${item.yt1}')">▶ 前半動画</button>`:''}${item.yt2?`<button class="btn-small btn-video" onclick="window.open('${item.yt2}')">▶ 後半動画</button>`:''}</div></div>\n`;
+  });
+
+  let txtVideos = '';
+  store.matches.forEach(item => {
+    const y1 = getYTId(item.yt1);
+    const y2 = getYTId(item.yt2);
+    if(y1 || y2) {
+      txtVideos += `<div class="highlight-card" style="grid-column: span 2; background: var(--navy-mid); border: 1px solid var(--court-line); padding: 1rem; border-radius: 4px; margin-bottom: 1rem;"><div style="font-weight: 700; font-size: 1.1rem; margin-bottom: 0.5rem; color: var(--orange);">${item.round} vs ${item.opp} (${item.date})</div><div style="display: grid; grid-template-columns: ${y1&&y2?'1fr 1fr':'1fr'}; gap: 1rem;">${y1?`<div><div style="font-size: 0.75rem; color: var(--gray); margin-bottom: 0.25rem;">▶ 前半</div><div style="position:relative; aspect-ratio:16/9; background:#000;"><iframe width="100%" height="100%" src="https://www.youtube.com/embed/${y1}" frameborder="0" allowfullscreen style="position:absolute; top:0; left:0; width:100%; height:100%;"></iframe></div></div>`:''}${y2?`<div><div style="font-size: 0.75rem; color: var(--gray); margin-bottom: 0.25rem;">▶ 後半</div><div style="position:relative; aspect-ratio:16/9; background:#000;"><iframe width="100%" height="100%" src="https://www.youtube.com/embed/${y2}" frameborder="0" allowfullscreen style="position:absolute; top:0; left:0; width:100%; height:100%;"></iframe></div></div>`:''}</div></div>\n`;
+    }
+  });
+
+  let txtGoals = '', txtAssists = '';
+  [...store.players].filter(p=>p.goals>0).sort((a,b)=>b.goals-a.goals).forEach((p,x)=>{
+    txtGoals += `<tr class="${x===0?'top-player':''}"><td class="rank-col">${x+1}</td><td class="player-name">${p.name}</td><td class="player-stat">${p.goals}</td></tr>\n`;
+  });
+  [...store.players].filter(p=>p.assists>0).sort((a,b)=>b.assists-a.assists).forEach((p,x)=>{
+    txtAssists += `<tr class="${x===0?'top-player':''}"><td class="rank-col">${x+1}</td><td class="player-name">${p.name}</td><td class="player-stat">${p.assists}</td></tr>\n`;
+  });
+
+  const out = `<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SUNFIRES | Futsal Team</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+  :root { --orange: #FF5500; --orange-light: #FF7733; --navy: #1A0D00; --navy-mid: #221200; --navy-light: #2E1A05; --court-line: #5A2E00; --white: #FFF5F0; --gray: #B09080; --gold: #FFD166; }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: var(--navy); color: var(--white); font-family: 'Noto Sans JP', sans-serif; overflow-x: hidden; }
+  nav { position: fixed; top: 0; width: 100%; z-index: 100; background: rgba(13, 27, 42, 0.92); backdrop-filter: blur(8px); border-bottom: 1px solid var(--court-line); padding: 0 2rem; display: flex; align-items: center; justify-content: space-between; height: 60px; }
+  .nav-logo { font-family: 'Bebas Neue', sans-serif; font-size: 1.6rem; letter-spacing: 0.08em; color: var(--orange); }
+  .nav-links { display: flex; gap: 2rem; list-style: none; }
+  .nav-links a { text-decoration: none; color: var(--gray); font-size: 0.8rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; transition: color 0.2s; }
+  .nav-links a:hover { color: var(--orange); }
+  .hero { min-height: 100vh; display: flex; align-items: center; position: relative; overflow: hidden; padding-top: 60px; }
+  .court-bg { position: absolute; inset: 0; background: radial-gradient(ellipse 60% 50% at 50% 50%, rgba(255,85,0,0.20) 0%, transparent 70%); }
+  .court-lines { position: absolute; inset: 0; opacity: 1; pointer-events:none; }
+  .court-lines svg { width: 100%; height: 100%; }
+  .hero-content { position: relative; z-index: 2; padding: 4rem 4rem; max-width: 1200px; margin: 0 auto; width: 100%; }
+  .hero-title { font-family: 'Bebas Neue', sans-serif; font-size: clamp(5rem, 12vw, 10rem); line-height: 0.9; letter-spacing: 0.04em; margin-bottom: 1.5rem; }
+  .hero-title .accent { color: var(--orange); }
+  .hero-subtitle { font-size: 1rem; color: #D8B8A8; max-width: 480px; line-height: 1.8; margin-bottom: 3rem; }
+  .hero-stats { display: flex; gap: 3rem; flex-wrap: wrap; }
+  .stat-item { border-left: 2px solid var(--orange); padding-left: 1rem; }
+  .stat-num { font-family: 'Bebas Neue', sans-serif; font-size: 2.8rem; color: var(--white); line-height: 1; }
+  .stat-label { font-size: 0.7rem; color: var(--gray); letter-spacing: 0.1em; text-transform: uppercase; margin-top: 0.2rem; }
+  section { padding: 5rem 4rem; max-width: 1200px; margin: 0 auto; }
+  .section-header { display: flex; align-items: baseline; gap: 1.5rem; margin-bottom: 3rem; border-bottom: 1px solid var(--court-line); padding-bottom: 1rem; }
+  .section-title { font-family: 'Bebas Neue', sans-serif; font-size: 2.5rem; letter-spacing: 0.06em; }
+  .section-en { font-size: 0.7rem; color: var(--orange); letter-spacing: 0.2em; text-transform: uppercase; font-weight: 700; }
+  .standings-section { background: var(--navy-mid); border-radius: 0; border-top: 1px solid var(--court-line); border-bottom: 1px solid var(--court-line); }
+  .standings-section > * { max-width: 1200px; margin: 0 auto; padding-left: 4rem; padding-right: 4rem; }
+  .standings-section section { padding: 5rem 4rem; }
+  .standings-table { width: 100%; border-collapse: collapse; }
+  .standings-table th { font-size: 0.65rem; color: var(--gray); text-transform: uppercase; letter-spacing: 0.15em; padding: 0.75rem 1rem; text-align: right; border-bottom: 1px solid var(--court-line); font-weight: 700; }
+  .standings-table th:first-child, .standings-table th:nth-child(2) { text-align: left; }
+  .standings-table td { padding: 1rem 1rem; text-align: right; border-bottom: 1px solid rgba(42,74,122,0.5); font-size: 0.9rem; }
+  .standings-table td:first-child { text-align: left; font-family: 'Bebas Neue', sans-serif; font-size: 1.2rem; color: var(--gray); width: 48px; }
+  .standings-table td:nth-child(2) { text-align: left; font-weight: 700; }
+  .standings-table tr:hover td { background: rgba(255,107,26,0.05); }
+  .rank-1 td:first-child { color: var(--gold); }
+  .rank-highlight td:nth-child(2) { color: var(--orange); }
+  .pts { font-family: 'Bebas Neue', sans-serif; font-size: 1.4rem; color: var(--orange); }
+  .form-badge { display: inline-block; width: 20px; height: 20px; border-radius: 3px; font-size: 0.65rem; font-weight: 900; text-align: center; line-height: 20px; margin: 0 1px; }
+  .form-W { background: #22C55E; color: #fff; }
+  .form-L { background: #EF4444; color: #fff; }
+  .form-D { background: #6B7280; color: #fff; }
+  .form-N { background: transparent; color: var(--gray); border: 1px solid var(--court-line); }
+  .results-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 1.5rem; }
+  .match-card { background: var(--navy-mid); border: 1px solid var(--court-line); border-radius: 4px; padding: 1.5rem; position: relative; overflow: hidden; transition: border-color 0.2s, transform 0.2s; cursor: pointer; }
+  .match-card:hover { border-color: var(--orange); transform: translateY(-2px); }
+  .match-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: var(--orange); opacity: 0; transition: opacity 0.2s; }
+  .match-card:hover::before { opacity: 1; }
+  .match-meta { font-size: 0.65rem; color: var(--gray); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 1rem; display: flex; justify-content: space-between; align-items: center; }
+  .match-round { background: var(--navy-light); padding: 0.2rem 0.6rem; border-radius: 2px; font-weight: 700; }
+  .match-teams { display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem; }
+  .team-name { flex: 1; font-weight: 700; font-size: 0.95rem; }
+  .team-name.away { text-align: right; color: var(--gray); }
+  .team-name.home { color: var(--white); }
+  .score { font-family: 'Bebas Neue', sans-serif; font-size: 2.5rem; letter-spacing: 0.05em; display: flex; gap: 0.3rem; align-items: center; }
+  .score-sep { color: var(--gray); font-size: 1.8rem; }
+  .score .win { color: var(--orange); }
+  .score .lose { color: var(--gray); }
+  .match-actions { display: flex; gap: 0.75rem; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--court-line); }
+  .btn-small { font-size: 0.65rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; padding: 0.4rem 0.8rem; border-radius: 2px; border: none; cursor: pointer; display: flex; align-items: center; gap: 0.4rem; transition: all 0.2s; }
+  .btn-video { background: var(--orange); color: white; }
+  .btn-video:hover { background: var(--orange-light); }
+  .highlights-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem; }
+  .highlight-card { position: relative; border-radius: 4px; overflow: hidden; background: var(--navy-light); }
+  .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
+  .stats-card { background: var(--navy-mid); border: 1px solid var(--court-line); border-radius: 4px; overflow: hidden; }
+  .stats-card-header { display: flex; align-items: center; gap: 0.75rem; padding: 1rem 1.5rem; border-bottom: 1px solid var(--court-line); background: var(--navy-light); }
+  .stats-icon { font-size: 1.1rem; }
+  .stats-card-title { font-size: 0.75rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--gray); }
+  .player-table { width: 100%; border-collapse: collapse; }
+  .player-table th { font-size: 0.6rem; color: var(--gray); text-transform: uppercase; letter-spacing: 0.15em; padding: 0.6rem 1.5rem; text-align: left; border-bottom: 1px solid var(--court-line); }
+  .player-table th:last-child { text-align: right; }
+  .player-table td { padding: 0.85rem 1.5rem; border-bottom: 1px solid rgba(90,46,0,0.3); font-size: 0.9rem; }
+  .player-table tr:last-child td { border-bottom: none; }
+  .player-table tr:hover td { background: rgba(255,85,0,0.05); }
+  .rank-col { font-family: 'Bebas Neue', sans-serif; font-size: 1.1rem; color: var(--gray); width: 36px; }
+  .player-name { font-weight: 700; }
+  .player-stat { text-align: right; font-family: 'Bebas Neue', sans-serif; font-size: 1.6rem; color: var(--orange); line-height: 1; }
+  .top-player .rank-col { color: var(--gold); }
+  .top-player .player-name { color: var(--white); }
+  footer { border-top:1px solid var(--court-line); padding:2.5rem 4rem; display:flex; justify-content:space-between; align-items:center; color:var(--gray); font-size:.75rem; }
+  .footer-logo { font-family:'Bebas Neue',sans-serif; color:var(--orange); font-size:1.5rem; letter-spacing:.08em; }
+  @media (max-width: 768px) { nav { padding: 0 1.5rem; } .nav-links { display: none; } .hero-content, section { padding: 3rem 1.5rem; } .hero-stats { gap: 2rem; } .results-grid { grid-template-columns: 1fr; } .highlights-grid { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<nav><div class="nav-logo">SUNFIRES</div><ul class="nav-links"><li><a href="#standings">順位表</a></li><li><a href="#results">試合結果</a></li><li><a href="#highlights">試合動画</a></li><li><a href="#stats">個人成績</a></li></ul></nav>
+<div class="hero"><div class="court-bg"></div><div class="court-lines"><svg viewBox="0 0 1200 700" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg"><defs><clipPath id="circleClip"><circle cx="600" cy="350" r="97"/></clipPath></defs><rect x="100" y="80" width="1000" height="540" fill="none" stroke="#FF7733" stroke-width="2" opacity="0.32"/><line x1="600" y1="80" x2="600" y2="620" stroke="#FF7733" stroke-width="2" opacity="0.32"/><circle cx="600" cy="350" r="100" fill="none" stroke="#FF5500" stroke-width="2.5" opacity="0.7"/><rect x="100" y="210" width="130" height="280" fill="none" stroke="#FF7733" stroke-width="2" opacity="0.28"/><rect x="970" y="210" width="130" height="280" fill="none" stroke="#FF7733" stroke-width="2" opacity="0.28"/><image href="./emblem.jpg" x="500" y="250" width="200" height="200" clip-path="url(#circleClip)" preserveAspectRatio="xMidYMid slice" onerror="this.style.display='block';"/></svg></div>
+  <div class="hero-content">
+    <h1 class="hero-title">SUN<br><span class="accent">FIRES</span></h1>
+    <p class="hero-subtitle">週末のコートで全力疾走するおっさんたちの記録。<br>試合動画・リーグ成績・ゴールハイライトを公開中。</p>
+    <div class="hero-stats">
+      <div class="stat-item"><div class="stat-num">${store.hero.played}</div><div class="stat-label">試合</div></div>
+      <div class="stat-item"><div class="stat-num">${store.hero.wins}</div><div class="stat-label">勝利</div></div>
+      <div class="stat-item"><div class="stat-num">${store.hero.goals}</div><div class="stat-label">総得点</div></div>
+      <div class="stat-item"><div class="stat-num">${store.hero.rank}</div><div class="stat-label">現在順位</div></div>
+    </div>
+  </div>
+</div>
+<div class="standings-section" id="standings"><section><div class="section-header"><h2 class="section-title">リーグ順位表</h2><span class="section-en">Standings</span></div><table class="standings-table"><thead><tr><th>#</th><th>チーム</th><th>試</th><th>勝</th><th>分</th><th>負</th><th>得</th><th>失</th><th>差</th><th>全10試合</th><th>勝点</th></tr></thead><tbody>${txtStandings}</tbody></table></section></div>
+<section id="results"><div class="section-header"><h2 class="section-title">試合結果</h2><span class="section-en">Results</span></div><div class="results-grid">${txtResults}</div></section>
+<div class="standings-section" id="highlights"><section><div class="section-header"><h2 class="section-title">試合動画</h2><span class="section-en">Match Videos</span></div><div class="highlights-grid">${txtVideos}</div></section></div>
+<section id="stats"><div class="section-header"><h2 class="section-title">個人成績</h2><span class="section-en">Player Stats</span></div><div class="stats-grid"><div class="stats-card"><div class="stats-card-header"><span class="stats-icon">⚽</span><span class="stats-card-title">得点ランキング</span></div><table class="player-table"><thead><tr><th>#</th><th>選手名</th><th>G</th></tr></thead><tbody>${txtGoals}</tbody></table></div><div class="stats-card"><div class="stats-card-header"><span class="stats-icon">🅰️</span><span class="stats-card-title">アシストランキング</span></div><table class="player-table"><thead><tr><th>#</th><th>選手名</th><th>A</th></tr></thead><tbody>${txtAssists}</tbody></table></div></div></section>
+<footer><div class="footer-logo">SUNFIRES</div><p>© 2026 SUNFIRES — All Rights Reserved</p></footer>
+</body>
+</html>`;
+
+  const blob = new Blob([out], { type: 'text/html' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'index.html'; 
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+}
 ['hero-played','hero-wins','hero-goals','hero-rank'].forEach(id=>$(id).addEventListener('change',()=>{syncHero();save()}));updatePreview();
 </script>
 </body></html>
