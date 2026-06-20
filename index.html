@@ -3,183 +3,6 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SUNFIRES Webサイト管理システム</title>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
-<style>
-:root{--orange:#FF5500;--orange-light:#FF7733;--dark:#1A0D00;--mid:#221200;--light:#2E1A05;--border:#5A2E00;--white:#FFF5F0;--gray:#B09080;--green:#22C55E;--red:#EF4444}
-*{margin:0;padding:0;box-sizing:border-box}body{background:var(--dark);color:var(--white);font-family:'Noto Sans JP',sans-serif;min-height:100vh;padding-bottom:110px}header{background:var(--mid);border-bottom:2px solid var(--orange);padding:1rem 2rem;display:flex;justify-content:space-between;align-items:center}.logo{font-family:'Bebas Neue',sans-serif;font-size:2rem;color:var(--orange);letter-spacing:.05em}.container{max-width:1200px;margin:2rem auto;padding:0 1rem;display:grid;gap:2rem}.panel{background:var(--mid);border:1px solid var(--border);padding:1.5rem;border-radius:4px}.panel-title{font-size:1.1rem;font-weight:700;color:var(--orange);margin-bottom:1.5rem;border-bottom:1px solid var(--border);padding-bottom:.5rem;display:flex;justify-content:space-between;align-items:center}.form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1rem;margin-bottom:1rem}.form-group{display:flex;flex-direction:column;gap:.3rem}label{font-size:.8rem;color:var(--gray);font-weight:700}input,select{background:var(--light);border:1px solid var(--border);color:var(--white);padding:.6rem;border-radius:3px;font:inherit;font-size:.9rem}input:focus,select:focus{outline:none;border-color:var(--orange)}.btn{background:var(--orange);color:#fff;border:none;padding:.65rem 1.2rem;font-weight:700;border-radius:3px;cursor:pointer}.btn:hover{background:var(--orange-light)}.btn-green{background:var(--green)}.btn-red{background:var(--red);padding:.3rem .6rem;font-size:.75rem}.btn-edit{background:#2563eb;padding:.3rem .6rem;font-size:.75rem}.btn-cancel{background:#6b7280;margin-left:.5rem}.item-actions{display:flex;gap:.4rem;flex-shrink:0}.editing-note{display:none;margin-top:.7rem;padding:.55rem .7rem;border-left:3px solid #2563eb;background:rgba(37,99,235,.12);color:#bfdbfe;font-size:.8rem}.editing-note.show{display:block}.preview-box{margin-top:1.2rem;background:rgba(0,0,0,.2);border:1px dashed var(--border);padding:.75rem;max-height:300px;overflow:auto;min-height:38px}.preview-item{display:flex;justify-content:space-between;align-items:center;gap:1rem;padding:.55rem 0;border-bottom:1px solid rgba(90,46,0,.35);font-size:.9rem}.preview-item:last-child{border-bottom:none}.empty{color:var(--gray);font-size:.85rem}.main-actions{position:fixed;bottom:0;left:0;right:0;background:rgba(26,13,0,.97);border-top:2px solid var(--orange);padding:1rem 2rem;display:flex;justify-content:center;z-index:1000}.export{width:min(900px,100%);font-size:1rem}.notice{color:var(--gray);font-size:.78rem;margin-top:.6rem}.url-hint{font-size:.75rem;color:var(--gray);margin-top:.35rem;line-height:1.5}@media(max-width:700px){
-  body{padding-bottom:96px}
-  header{padding:.85rem 1rem;align-items:flex-start;gap:.5rem;flex-direction:column}
-  header>div:last-child{font-size:.72rem!important}
-  .logo{font-size:1.6rem}
-  .container{margin:1rem auto;padding:0 .75rem;gap:1rem}
-  .panel{padding:1rem}
-  .panel-title{font-size:1rem;align-items:flex-start;gap:.75rem;flex-wrap:wrap}
-  .panel-title .btn{width:100%}
-  .form-grid{grid-template-columns:1fr!important;gap:.75rem}
-  input,select{width:100%;font-size:16px;min-height:44px}
-  .btn{min-height:44px;width:100%;padding:.7rem 1rem}
-  .btn-cancel{margin:.5rem 0 0}
-  .preview-box{padding:.65rem}
-  .preview-item{align-items:stretch;flex-direction:column;gap:.65rem}
-  .preview-item>span:first-child{overflow-wrap:anywhere;line-height:1.55}
-  .item-actions{width:100%;display:grid;grid-template-columns:1fr 1fr;gap:.5rem}
-  .item-actions .btn{width:100%;font-size:.82rem;padding:.55rem .6rem}
-  .main-actions{padding:.7rem .75rem}
-  .export{font-size:.92rem}
-}
-</style>
-</head>
-<body>
-<header><div class="logo">SUNFIRES ADMIN</div><div style="font-size:.8rem;color:var(--gray)">データはブラウザに自動保存されます</div></header>
-<div class="container">
-<section class="panel"><div class="panel-title"><span>1. カウンター数値指定</span><button class="btn btn-green" onclick="autoCalcHero()" style="font-size:.75rem;padding:.35rem .65rem">自動計算する</button></div><div class="form-grid"><div class="form-group"><label>総試合数</label><input type="number" id="hero-played" value="2"></div><div class="form-group"><label>総勝利数</label><input type="number" id="hero-wins" value="2"></div><div class="form-group"><label>総得点数</label><input type="number" id="hero-goals" value="38"></div><div class="form-group"><label>現在順位</label><input type="text" id="hero-rank" value="3位"></div></div></section>
-<section class="panel"><div class="panel-title">2. 試合結果・動画・PULSE ECHOの追加</div><div class="form-grid"><div class="form-group"><label>試合日</label><input id="match-date" placeholder="2026.06.07"></div><div class="form-group"><label>節 / 大会名</label><input id="match-round" placeholder="第2節"></div><div class="form-group"><label>対戦相手</label><input id="match-opp" placeholder="ナイスガイ"></div><div class="form-group"><label>結果</label><select id="match-result"><option value="W">○ 勝利</option><option value="D">△ 引分</option><option value="L">● 敗北</option></select></div></div><div class="form-grid"><div class="form-group"><label>自得点</label><input type="number" id="match-shome" value="0"></div><div class="form-group"><label>相手得点</label><input type="number" id="match-saway" value="0"></div><div class="form-group"><label>YouTube【前半】URL</label><input id="match-yt1" placeholder="https://youtu.be/..."></div><div class="form-group"><label>YouTube【後半】URL</label><input id="match-yt2" placeholder="https://youtu.be/..."></div></div><div class="form-grid"><div class="form-group"><label>PULSE ECHO【前半】URL</label><input id="match-pulse1" placeholder="https://.../?v=...&title=前半"></div><div class="form-group"><label>PULSE ECHO【後半】URL</label><input id="match-pulse2" placeholder="https://.../?v=...&title=後半"></div></div><p class="notice">試合結果欄には動画ボタンを表示せず、試合動画欄に前半・後半の動画とPULSE ECHOボタンをまとめて表示します。</p><button class="btn" id="match-save-btn" onclick="addMatch()">試合データを追加</button><button class="btn btn-cancel" id="match-cancel-btn" onclick="cancelEdit('matches')" style="display:none">編集をやめる</button><div class="editing-note" id="match-edit-note">試合データを編集中です。入力内容を直して「更新する」を押してください。</div><div class="preview-box" id="match-list"></div></section>
-<section class="panel"><div class="panel-title">3. リーグ順位表チームの追加</div><div class="form-grid"><div class="form-group"><label>順位</label><input type="number" id="std-rank" value="1"></div><div class="form-group"><label>チーム名</label><input id="std-name" placeholder="SUNFIRES ★"></div><div class="form-group"><label>試合数</label><input type="number" id="std-p" value="0"></div><div class="form-group"><label>勝</label><input type="number" id="std-w" value="0"></div><div class="form-group"><label>分</label><input type="number" id="std-d" value="0"></div><div class="form-group"><label>負</label><input type="number" id="std-l" value="0"></div></div><div class="form-grid"><div class="form-group"><label>得点</label><input type="number" id="std-gf" value="0"></div><div class="form-group"><label>失点</label><input type="number" id="std-ga" value="0"></div><div class="form-group"><label>勝点</label><input type="number" id="std-pts" value="0"></div><div class="form-group"><label>直近10試合（例: WWDL）</label><input id="std-form" placeholder="WW"></div></div><button class="btn" id="standing-save-btn" onclick="addStanding()">順位表チームを追加</button><button class="btn btn-cancel" id="standing-cancel-btn" onclick="cancelEdit('standings')" style="display:none">編集をやめる</button><div class="editing-note" id="standing-edit-note">順位表データを編集中です。</div><div class="preview-box" id="standing-list"></div></section>
-<section class="panel"><div class="panel-title">4. 選手スタッツの追加・更新</div><div class="form-grid"><div class="form-group"><label>選手名</label><input id="player-name" placeholder="田中 健一"></div><div class="form-group"><label>得点</label><input type="number" id="player-goals" value="0"></div><div class="form-group"><label>アシスト</label><input type="number" id="player-assists" value="0"></div></div><button class="btn" id="player-save-btn" onclick="addPlayer()">選手を追加・更新</button><button class="btn btn-cancel" id="player-cancel-btn" onclick="cancelEdit('players')" style="display:none">編集をやめる</button><div class="editing-note" id="player-edit-note">選手データを編集中です。</div><div class="preview-box" id="player-list"></div><p class="notice">同じ名前を入力すると、その選手の数字を更新します。</p></section>
-<section class="panel"><div class="panel-title">5. 過去データPDF</div>
-<div class="form-grid"><div class="form-group"><label>過去データの表示名</label><input id="archive-title" placeholder="2025年度 成績資料"></div><div class="form-group"><label>PDFのURLまたはファイル名</label><input id="archive-url" placeholder="pdf/2025-results.pdf"></div></div>
-<button class="btn" id="archive-save-btn" onclick="addArchive()">PDF資料を追加</button><button class="btn btn-cancel" id="archive-cancel-btn" onclick="cancelEdit('archives')" style="display:none">編集をやめる</button><div class="editing-note" id="archive-edit-note">PDF資料を編集中です。</div><div class="preview-box" id="archive-list"></div>
-<p class="notice">PDFはGitHubへアップロードし、その場所を入力します。例：<strong>pdf/2025-results.pdf</strong></p></section>
-</div>
-<div class="main-actions"><button class="btn export" onclick="exportHTML()">🔥 公開用 index.html を書き出す</button></div>
-<script>
-const STORAGE_KEY='sunfires_admin_store_v2';
-let store={hero:{played:2,wins:2,goals:38,rank:'3位'},matches:[],standings:[],players:[],archives:[]};
-try{const saved=localStorage.getItem(STORAGE_KEY);if(saved)store=JSON.parse(saved)}catch(e){console.warn('保存データの読込に失敗',e)}
-store.archives=Array.isArray(store.archives)?store.archives:[];store.matches=(Array.isArray(store.matches)?store.matches:[]).map(m=>({...m,pulse1:m.pulse1||'',pulse2:m.pulse2||''}));
-const editing={matches:null,standings:null,players:null,archives:null};
-const $=id=>document.getElementById(id);const num=id=>Number($(id).value)||0;const text=id=>$(id).value.trim();
-function save(){localStorage.setItem(STORAGE_KEY,JSON.stringify(store))}
-function esc(v){return String(v??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]))}
-function updatePreview(){save();$('hero-played').value=store.hero.played;$('hero-wins').value=store.hero.wins;$('hero-goals').value=store.hero.goals;$('hero-rank').value=store.hero.rank;
-$('match-list').innerHTML=store.matches.length?store.matches.map((m,i)=>`<div class="preview-item"><span>${esc(m.date)}［${esc(m.round)}］SUNFIRES ${m.shome}-${m.saway} ${esc(m.opp)} (${esc(m.result)})</span><span class="item-actions"><button class="btn btn-edit" onclick="editItem('matches',${i})">編集</button><button class="btn btn-red" onclick="removeItem('matches',${i})">削除</button></span></div>`).join(''):'<div class="empty">試合データはまだありません</div>';
-$('standing-list').innerHTML=store.standings.length?[...store.standings].sort((a,b)=>a.rank-b.rank).map(s=>{const i=store.standings.indexOf(s);return `<div class="preview-item"><span>#${s.rank} ${esc(s.name)}（勝点 ${s.pts}）</span><span class="item-actions"><button class="btn btn-edit" onclick="editItem('standings',${i})">編集</button><button class="btn btn-red" onclick="removeItem('standings',${i})">削除</button></span></div>`}).join(''):'<div class="empty">順位表データはまだありません</div>';
-$('player-list').innerHTML=store.players.length?[...store.players].sort((a,b)=>b.goals-a.goals).map(p=>{const i=store.players.indexOf(p);return `<div class="preview-item"><span>${esc(p.name)}（G:${p.goals} / A:${p.assists}）</span><span class="item-actions"><button class="btn btn-edit" onclick="editItem('players',${i})">編集</button><button class="btn btn-red" onclick="removeItem('players',${i})">削除</button></span></div>`}).join(''):'<div class="empty">選手データはまだありません</div>';
-$('archive-list').innerHTML=store.archives.length?store.archives.map((a,i)=>`<div class="preview-item"><span>${esc(a.title)} — ${esc(a.url)}</span><span class="item-actions"><button class="btn btn-edit" onclick="editItem('archives',${i})">編集</button><button class="btn btn-red" onclick="removeItem('archives',${i})">削除</button></span></div>`).join(''):'<div class="empty">過去データPDFはまだありません</div>'}
-function removeItem(type,index){
-  if(!confirm('このデータを削除しますか？'))return;
-  store[type].splice(index,1);
-  if(editing[type]===index)cancelEdit(type);else if(editing[type]!==null&&editing[type]>index)editing[type]--;
-  updatePreview();
-}
-function setEditUI(type,on){
-  const map={matches:'match',standings:'standing',players:'player',archives:'archive'};
-  const p=map[type];
-  $(p+'-save-btn').textContent=on?'変更を更新する':({matches:'試合データを追加',standings:'順位表チームを追加',players:'選手を追加・更新',archives:'PDF資料を追加'}[type]);
-  $(p+'-cancel-btn').style.display=on?'inline-block':'none';
-  $(p+'-edit-note').classList.toggle('show',on);
-}
-function clearForm(type){
-  if(type==='matches'){
-    ['match-date','match-round','match-opp','match-yt1','match-yt2','match-pulse1','match-pulse2'].forEach(id=>$(id).value='');
-    $('match-result').value='W';$('match-shome').value=0;$('match-saway').value=0;
-  }else if(type==='standings'){
-    ['std-name','std-form'].forEach(id=>$(id).value='');
-    ['std-rank','std-p','std-w','std-d','std-l','std-gf','std-ga','std-pts'].forEach(id=>$(id).value=id==='std-rank'?1:0);
-  }else if(type==='players'){
-    $('player-name').value='';$('player-goals').value=0;$('player-assists').value=0;
-  }else if(type==='archives'){
-    $('archive-title').value='';$('archive-url').value='';
-  }
-}
-function cancelEdit(type){editing[type]=null;clearForm(type);setEditUI(type,false)}
-function editItem(type,index){
-  editing[type]=index;const v=store[type][index];
-  if(type==='matches'){
-    $('match-date').value=v.date||'';$('match-round').value=v.round||'';$('match-opp').value=v.opp||'';$('match-result').value=v.result||'W';$('match-shome').value=v.shome||0;$('match-saway').value=v.saway||0;$('match-yt1').value=v.yt1||'';$('match-yt2').value=v.yt2||'';$('match-pulse1').value=v.pulse1||'';$('match-pulse2').value=v.pulse2||'';
-  }else if(type==='standings'){
-    $('std-rank').value=v.rank||1;$('std-name').value=v.name||'';$('std-p').value=v.p||0;$('std-w').value=v.w||0;$('std-d').value=v.d||0;$('std-l').value=v.l||0;$('std-gf').value=v.gf||0;$('std-ga').value=v.ga||0;$('std-pts').value=v.pts||0;$('std-form').value=v.form||'';
-  }else if(type==='players'){
-    $('player-name').value=v.name||'';$('player-goals').value=v.goals||0;$('player-assists').value=v.assists||0;
-  }else if(type==='archives'){
-    $('archive-title').value=v.title||'';$('archive-url').value=v.url||'';
-  }
-  setEditUI(type,true);window.scrollTo({top:$(type==='matches'?'match-date':type==='standings'?'std-rank':type==='players'?'player-name':'archive-title').getBoundingClientRect().top+window.scrollY-100,behavior:'smooth'});
-}
-function syncHero(){store.hero={played:num('hero-played'),wins:num('hero-wins'),goals:num('hero-goals'),rank:text('hero-rank')||'-'}}
-function autoCalcHero(){store.hero.played=store.matches.length;store.hero.wins=store.matches.filter(m=>m.result==='W').length;store.hero.goals=store.matches.reduce((s,m)=>s+Number(m.shome||0),0);updatePreview()}
-function addMatch(){
-  const opp=text('match-opp');if(!opp){alert('対戦相手を入力してください');return}
-  const data={date:text('match-date')||new Date().toISOString().slice(0,10).replaceAll('-','.'),round:text('match-round')||'試合',opp,result:$('match-result').value,shome:num('match-shome'),saway:num('match-saway'),yt1:text('match-yt1'),yt2:text('match-yt2'),pulse1:text('match-pulse1'),pulse2:text('match-pulse2')};
-  if(editing.matches!==null)store.matches[editing.matches]=data;else store.matches.unshift(data);
-  cancelEdit('matches');updatePreview();
-}
-function addStanding(){
-  const name=text('std-name');if(!name){alert('チーム名を入力してください');return}
-  const gf=num('std-gf'),ga=num('std-ga');const data={rank:num('std-rank')||1,name,p:num('std-p'),w:num('std-w'),d:num('std-d'),l:num('std-l'),gf,ga,diff:gf-ga,pts:num('std-pts'),form:text('std-form').toUpperCase()};
-  if(editing.standings!==null)store.standings[editing.standings]=data;else store.standings.push(data);
-  cancelEdit('standings');updatePreview();
-}
-function addPlayer(){
-  const name=text('player-name');if(!name){alert('選手名を入力してください');return}
-  const data={name,goals:num('player-goals'),assists:num('player-assists')};
-  if(editing.players!==null)store.players[editing.players]=data;else{const found=store.players.find(p=>p.name===name);if(found)Object.assign(found,data);else store.players.push(data)}
-  cancelEdit('players');updatePreview();
-}
-function addArchive(){
-  const title=text('archive-title'),url=text('archive-url');if(!title||!url){alert('表示名とPDFの場所を入力してください');return}
-  const data={title,url};if(editing.archives!==null)store.archives[editing.archives]=data;else store.archives.push(data);
-  cancelEdit('archives');updatePreview();
-}
-function getYTId(url){if(!url)return'';try{const u=new URL(url);if(u.hostname.includes('youtu.be'))return u.pathname.slice(1).split('/')[0];if(u.searchParams.get('v'))return u.searchParams.get('v');const p=u.pathname.split('/').filter(Boolean);const n=p.findIndex(x=>['embed','shorts','live'].includes(x));return n>=0?p[n+1]||'':''}catch{return''}}
-function exportHTML() {
-  syncHero();
-  save();
-  store.hero.played = document.getElementById('hero-played').value;
-  store.hero.wins = document.getElementById('hero-wins').value;
-  store.hero.goals = document.getElementById('hero-goals').value;
-  store.hero.rank = document.getElementById('hero-rank').value;
-  save();
-
-  let txtStandings = '';
-  store.standings.sort((a,b)=>a.rank-b.rank).forEach(item => {
-    const isHighlight = item.name.includes('SUNFIRES') ? ' class="rank-highlight"' : '';
-    let badges = '';
-    let chars = item.form.split('');
-    for(let i=0; i<10; i++) {
-      let c = chars[i] || '－';
-      let bClass = c === 'W' ? 'form-W' : c === 'L' ? 'form-L' : c === 'D' ? 'form-D' : 'form-N';
-      badges += `<span class="form-badge ${bClass}">${c}</span>`;
-    }
-    txtStandings += `<tr${isHighlight}><td>${item.rank}</td><td>${item.name}</td><td>${item.p}</td><td>${item.w}</td><td>${item.d}</td><td>${item.l}</td><td>${item.gf}</td><td>${item.ga}</td><td>${item.diff>0?'+'+item.diff:item.diff}</td><td>${badges}</td><td class="pts">${item.pts}</td></tr>\n`;
-  });
-
-  let txtResults = '';
-  store.matches.forEach(item => {
-    const cH = parseInt(item.shome) >= parseInt(item.saway) ? 'win' : 'lose';
-    const cA = parseInt(item.saway) >= parseInt(item.shome) ? 'win' : 'lose';
-    txtResults += `<div class="match-card"><div class="match-meta"><span>${item.date}</span><span class="match-round">${item.round}</span></div><div class="match-teams"><div class="team-name home">SUNFIRES</div><div class="score"><span class="${cH}">${item.shome}</span><span class="score-sep">:</span><span class="${cA}">${item.saway}</span></div><div class="team-name away">${item.opp}</div></div></div>\n`;
-  });
-
-  let txtVideos = '';
-  store.matches.forEach(item => {
-    const y1 = getYTId(item.yt1);
-    const y2 = getYTId(item.yt2);
-    if(y1 || y2) {
-      txtVideos += `<div class="highlight-card" style="grid-column: span 2; background: var(--navy-mid); border: 1px solid var(--court-line); padding: 1rem; border-radius: 4px; margin-bottom: 1rem;"><div style="font-weight: 700; font-size: 1.1rem; margin-bottom: 0.5rem; color: var(--orange);">${item.round} vs ${item.opp} (${item.date})</div><div class="video-halves ${y1&&y2?'two-halves':'one-half'}">${y1?`<div><div style="font-size: 0.75rem; color: var(--gray); margin-bottom: 0.25rem;">▶ 前半</div><div style="position:relative; aspect-ratio:16/9; background:#000;"><iframe width="100%" height="100%" src="https://www.youtube.com/embed/${y1}" frameborder="0" allowfullscreen style="position:absolute; top:0; left:0; width:100%; height:100%;"></iframe></div>${item.pulse1?`<a class="pulse-watch-btn" href="${esc(item.pulse1)}" target="_blank" rel="noopener">💬 前半をPULSE ECHOで見る</a>`:''}</div>`:''}${y2?`<div><div style="font-size: 0.75rem; color: var(--gray); margin-bottom: 0.25rem;">▶ 後半</div><div style="position:relative; aspect-ratio:16/9; background:#000;"><iframe width="100%" height="100%" src="https://www.youtube.com/embed/${y2}" frameborder="0" allowfullscreen style="position:absolute; top:0; left:0; width:100%; height:100%;"></iframe></div>${item.pulse2?`<a class="pulse-watch-btn" href="${esc(item.pulse2)}" target="_blank" rel="noopener">💬 後半をPULSE ECHOで見る</a>`:''}</div>`:''}</div></div>\n`;
-    }
-  });
-
-  let txtGoals = '', txtAssists = '';
-  [...store.players].filter(p=>p.goals>0).sort((a,b)=>b.goals-a.goals).forEach((p,x)=>{
-    txtGoals += `<tr class="${x===0?'top-player':''}"><td class="rank-col">${x+1}</td><td class="player-name">${p.name}</td><td class="player-stat">${p.goals}</td></tr>\n`;
-  });
-  [...store.players].filter(p=>p.assists>0).sort((a,b)=>b.assists-a.assists).forEach((p,x)=>{
-    txtAssists += `<tr class="${x===0?'top-player':''}"><td class="rank-col">${x+1}</td><td class="player-name">${p.name}</td><td class="player-stat">${p.assists}</td></tr>\n`;
-  });
-
-  const hasPulse = store.matches.some(m => (m.pulse1||'').trim() || (m.pulse2||'').trim());
-  const pulseNav = hasPulse ? `<li><a href="#highlights">PULSE ECHO</a></li>` : '';
-  const pulseHero = hasPulse ? `<a class="pulse-cta" href="#highlights"><span>▶</span><span><strong>PULSE ECHO</strong><small>前半・後半から選んで反応を共有</small></span></a>` : '';
-  const archiveNav = store.archives.length ? '<li><a href="#archives">過去データ</a></li>' : '';
-  const txtArchives = store.archives.map(a=>`<a class="archive-card" href="${esc(a.url)}" target="_blank" rel="noopener"><span class="archive-icon">PDF</span><span><strong>${esc(a.title)}</strong><small>過去の成績・記録を見る</small></span><span class="archive-arrow">↗</span></a>`).join('');
-
-  const out = `<!DOCTYPE html>
-<html lang="ja">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>SUNFIRES | Futsal Team</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
 <style>
@@ -313,36 +136,42 @@ function exportHTML() {
 </style>
 </head>
 <body>
-<nav><div class="nav-logo">SUNFIRES</div><ul class="nav-links"><li><a href="#standings">順位表</a></li><li><a href="#results">試合結果</a></li><li><a href="#highlights">試合動画</a></li><li><a href="#stats">個人成績</a></li>${archiveNav}${pulseNav}</ul></nav>
+<nav><div class="nav-logo">SUNFIRES</div><ul class="nav-links"><li><a href="#standings">順位表</a></li><li><a href="#results">試合結果</a></li><li><a href="#highlights">試合動画</a></li><li><a href="#stats">個人成績</a></li><li><a href="#archives">過去データ</a></li><li><a href="#highlights">PULSE ECHO</a></li></ul></nav>
 <div class="hero"><div class="court-bg"></div><div class="court-lines"><svg viewBox="0 0 1200 700" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg"><defs><clipPath id="circleClip"><circle cx="600" cy="350" r="97"/></clipPath></defs><rect x="100" y="80" width="1000" height="540" fill="none" stroke="#FF7733" stroke-width="2" opacity="0.32"/><line x1="600" y1="80" x2="600" y2="620" stroke="#FF7733" stroke-width="2" opacity="0.32"/><circle cx="600" cy="350" r="100" fill="none" stroke="#FF5500" stroke-width="2.5" opacity="0.7"/><rect x="100" y="210" width="130" height="280" fill="none" stroke="#FF7733" stroke-width="2" opacity="0.28"/><rect x="970" y="210" width="130" height="280" fill="none" stroke="#FF7733" stroke-width="2" opacity="0.28"/><image href="./emblem.jpg" x="500" y="250" width="200" height="200" clip-path="url(#circleClip)" preserveAspectRatio="xMidYMid slice" onerror="this.style.display='block';"/></svg></div>
   <div class="hero-content">
     <h1 class="hero-title">SUN<br><span class="accent">FIRES</span></h1>
     <p class="hero-subtitle">週末のコートで全力疾走するおっさんたちの記録。<br>試合動画・リーグ成績・ゴールハイライトを公開中。</p>
     <div class="hero-stats">
-      <div class="stat-item"><div class="stat-num">${store.hero.played}</div><div class="stat-label">試合</div></div>
-      <div class="stat-item"><div class="stat-num">${store.hero.wins}</div><div class="stat-label">勝利</div></div>
-      <div class="stat-item"><div class="stat-num">${store.hero.goals}</div><div class="stat-label">総得点</div></div>
-      <div class="stat-item"><div class="stat-num">${store.hero.rank}</div><div class="stat-label">現在順位</div></div>
-    </div>${pulseHero}
+      <div class="stat-item"><div class="stat-num">2</div><div class="stat-label">試合</div></div>
+      <div class="stat-item"><div class="stat-num">2</div><div class="stat-label">勝利</div></div>
+      <div class="stat-item"><div class="stat-num">15</div><div class="stat-label">総得点</div></div>
+      <div class="stat-item"><div class="stat-num">1位</div><div class="stat-label">現在順位</div></div>
+    </div><a class="pulse-cta" href="#highlights"><span>▶</span><span><strong>PULSE ECHO</strong><small>前半・後半から選んで反応を共有</small></span></a>
   </div>
 </div>
-<div class="standings-section" id="standings"><section><div class="section-header"><h2 class="section-title">リーグ順位表</h2><span class="section-en">Standings</span></div><div class="table-scroll" role="region" aria-label="リーグ順位表（横にスクロールできます）" tabindex="0"><table class="standings-table"><thead><tr><th>#</th><th>チーム</th><th>試</th><th>勝</th><th>分</th><th>負</th><th>得</th><th>失</th><th>差</th><th>全10試合</th><th>勝点</th></tr></thead><tbody>${txtStandings}</tbody></table></div></section></div>
-<section id="results"><div class="section-header"><h2 class="section-title">試合結果</h2><span class="section-en">Results</span></div><div class="results-grid">${txtResults}</div></section>
-<div class="standings-section" id="highlights"><section><div class="section-header"><h2 class="section-title">試合動画</h2><span class="section-en">Match Videos</span></div><div class="highlights-grid">${txtVideos}</div></section></div>
-<section id="stats"><div class="section-header"><h2 class="section-title">個人成績</h2><span class="section-en">Player Stats</span></div><div class="stats-grid"><div class="stats-card"><div class="stats-card-header"><span class="stats-icon">⚽</span><span class="stats-card-title">得点ランキング</span></div><table class="player-table"><thead><tr><th>#</th><th>選手名</th><th>G</th></tr></thead><tbody>${txtGoals}</tbody></table></div><div class="stats-card"><div class="stats-card-header"><span class="stats-icon">🅰️</span><span class="stats-card-title">アシストランキング</span></div><table class="player-table"><thead><tr><th>#</th><th>選手名</th><th>A</th></tr></thead><tbody>${txtAssists}</tbody></table></div></div></section>
-${store.archives.length?`<div class="standings-section" id="archives"><section><div class="section-header"><h2 class="section-title">過去のデータ</h2><span class="section-en">Archives</span></div><div class="archive-grid">${txtArchives}</div></section></div>`:''}
+<div class="standings-section" id="standings"><section><div class="section-header"><h2 class="section-title">リーグ順位表</h2><span class="section-en">Standings</span></div><div class="table-scroll" role="region" aria-label="リーグ順位表（横にスクロールできます）" tabindex="0"><table class="standings-table"><thead><tr><th>#</th><th>チーム</th><th>試</th><th>勝</th><th>分</th><th>負</th><th>得</th><th>失</th><th>差</th><th>全10試合</th><th>勝点</th></tr></thead><tbody><tr class="rank-highlight"><td>1</td><td>SUNFIRES</td><td>2</td><td>2</td><td>0</td><td>0</td><td>15</td><td>7</td><td>+8</td><td><span class="form-badge form-W">W</span><span class="form-badge form-W">W</span><span class="form-badge form-N">－</span><span class="form-badge form-N">－</span><span class="form-badge form-N">－</span><span class="form-badge form-N">－</span><span class="form-badge form-N">－</span><span class="form-badge form-N">－</span><span class="form-badge form-N">－</span><span class="form-badge form-N">－</span></td><td class="pts">6</td></tr>
+<tr><td>2</td><td>ジョカトーレKOBE</td><td>1</td><td>1</td><td>0</td><td>0</td><td>9</td><td>3</td><td>+6</td><td><span class="form-badge form-W">W</span><span class="form-badge form-N">－</span><span class="form-badge form-N">－</span><span class="form-badge form-N">－</span><span class="form-badge form-N">－</span><span class="form-badge form-N">－</span><span class="form-badge form-N">－</span><span class="form-badge form-N">－</span><span class="form-badge form-N">－</span><span class="form-badge form-N">－</span></td><td class="pts">3</td></tr>
+<tr><td>3</td><td>スカボロフェアーズ</td><td>1</td><td>1</td><td>0</td><td>0</td><td>6</td><td>3</td><td>+3</td><td><span class="form-badge form-W">W</span><span class="form-badge form-N">－</span><span class="form-badge form-N">－</span><span class="form-badge form-N">－</span><span class="form-badge form-N">－</span><span class="form-badge form-N">－</span><span class="form-badge form-N">－</span><span class="form-badge form-N">－</span><span class="form-badge form-N">－</span><span class="form-badge form-N">－</span></td><td class="pts">3</td></tr>
+<tr><td>4</td><td>HOP.FC</td><td>1</td><td>1</td><td>0</td><td>0</td><td>4</td><td>3</td><td>+1</td><td><span class="form-badge form-W">W</span><span class="form-badge form-N">－</span><span class="form-badge form-N">－</span><span class="form-badge form-N">－</span><span class="form-badge form-N">－</span><span class="form-badge form-N">－</span><span class="form-badge form-N">－</span><span class="form-badge form-N">－</span><span class="form-badge form-N">－</span><span class="form-badge form-N">－</span></td><td class="pts">3</td></tr>
+<tr><td>5</td><td>FC明眸会</td><td>1</td><td>0</td><td>0</td><td>1</td><td>3</td><td>6</td><td>-3</td><td><span class="form-badge form-L">L</span><span class="form-badge form-N">－</span><span class="form-badge form-N">－</span><span class="form-badge form-N">－</span><span class="form-badge form-N">－</span><span class="form-badge form-N">－</span><span class="form-badge form-N">－</span><span class="form-badge form-N">－</span><span class="form-badge form-N">－</span><span class="form-badge form-N">－</span></td><td class="pts">0</td></tr>
+<tr><td>6</td><td>ナイスガイ</td><td>2</td><td>0</td><td>0</td><td>2</td><td>8</td><td>12</td><td>-4</td><td><span class="form-badge form-L">L</span><span class="form-badge form-L">L</span><span class="form-badge form-N">－</span><span class="form-badge form-N">－</span><span class="form-badge form-N">－</span><span class="form-badge form-N">－</span><span class="form-badge form-N">－</span><span class="form-badge form-N">－</span><span class="form-badge form-N">－</span><span class="form-badge form-N">－</span></td><td class="pts">0</td></tr>
+<tr><td>7</td><td>WEGUT .SC-MIX</td><td>1</td><td>0</td><td>0</td><td>1</td><td>2</td><td>7</td><td>-5</td><td><span class="form-badge form-L">L</span><span class="form-badge form-N">－</span><span class="form-badge form-N">－</span><span class="form-badge form-N">－</span><span class="form-badge form-N">－</span><span class="form-badge form-N">－</span><span class="form-badge form-N">－</span><span class="form-badge form-N">－</span><span class="form-badge form-N">－</span><span class="form-badge form-N">－</span></td><td class="pts">0</td></tr>
+<tr><td>8</td><td>ごんたくれ</td><td>1</td><td>0</td><td>0</td><td>1</td><td>3</td><td>9</td><td>-6</td><td><span class="form-badge form-L">L</span><span class="form-badge form-N">－</span><span class="form-badge form-N">－</span><span class="form-badge form-N">－</span><span class="form-badge form-N">－</span><span class="form-badge form-N">－</span><span class="form-badge form-N">－</span><span class="form-badge form-N">－</span><span class="form-badge form-N">－</span><span class="form-badge form-N">－</span></td><td class="pts">0</td></tr>
+</tbody></table></div></section></div>
+<section id="results"><div class="section-header"><h2 class="section-title">試合結果</h2><span class="section-en">Results</span></div><div class="results-grid"><div class="match-card"><div class="match-meta"><span>2026.06.07</span><span class="match-round">第2節</span></div><div class="match-teams"><div class="team-name home">SUNFIRES</div><div class="score"><span class="win">8</span><span class="score-sep">:</span><span class="lose">5</span></div><div class="team-name away">ナイスガイ</div></div></div>
+<div class="match-card"><div class="match-meta"><span>2026.05.24</span><span class="match-round">第1節</span></div><div class="match-teams"><div class="team-name home">SUNFIRES</div><div class="score"><span class="win">7</span><span class="score-sep">:</span><span class="lose">2</span></div><div class="team-name away">WEGUT.SC-MIX</div></div></div>
+</div></section>
+<div class="standings-section" id="highlights"><section><div class="section-header"><h2 class="section-title">試合動画</h2><span class="section-en">Match Videos</span></div><div class="highlights-grid"><div class="highlight-card" style="grid-column: span 2; background: var(--navy-mid); border: 1px solid var(--court-line); padding: 1rem; border-radius: 4px; margin-bottom: 1rem;"><div style="font-weight: 700; font-size: 1.1rem; margin-bottom: 0.5rem; color: var(--orange);">第2節 vs ナイスガイ (2026.06.07)</div><div class="video-halves two-halves"><div><div style="font-size: 0.75rem; color: var(--gray); margin-bottom: 0.25rem;">▶ 前半</div><div style="position:relative; aspect-ratio:16/9; background:#000;"><iframe width="100%" height="100%" src="https://www.youtube.com/embed/kdOg6lZjKcA" frameborder="0" allowfullscreen style="position:absolute; top:0; left:0; width:100%; height:100%;"></iframe></div><a class="pulse-watch-btn" href="https://sunfires2002.github.io/PULSE-ECHO/?v=kdOg6lZjKcA" target="_blank" rel="noopener">💬 前半をPULSE ECHOで見る</a></div><div><div style="font-size: 0.75rem; color: var(--gray); margin-bottom: 0.25rem;">▶ 後半</div><div style="position:relative; aspect-ratio:16/9; background:#000;"><iframe width="100%" height="100%" src="https://www.youtube.com/embed/dSIO3AdVRIs" frameborder="0" allowfullscreen style="position:absolute; top:0; left:0; width:100%; height:100%;"></iframe></div><a class="pulse-watch-btn" href="https://sunfires2002.github.io/PULSE-ECHO/" target="_blank" rel="noopener">💬 後半をPULSE ECHOで見る</a></div></div></div>
+<div class="highlight-card" style="grid-column: span 2; background: var(--navy-mid); border: 1px solid var(--court-line); padding: 1rem; border-radius: 4px; margin-bottom: 1rem;"><div style="font-weight: 700; font-size: 1.1rem; margin-bottom: 0.5rem; color: var(--orange);">第1節 vs WEGUT.SC-MIX (2026.05.24)</div><div class="video-halves two-halves"><div><div style="font-size: 0.75rem; color: var(--gray); margin-bottom: 0.25rem;">▶ 前半</div><div style="position:relative; aspect-ratio:16/9; background:#000;"><iframe width="100%" height="100%" src="https://www.youtube.com/embed/cHNDtNQL_Ks" frameborder="0" allowfullscreen style="position:absolute; top:0; left:0; width:100%; height:100%;"></iframe></div></div><div><div style="font-size: 0.75rem; color: var(--gray); margin-bottom: 0.25rem;">▶ 後半</div><div style="position:relative; aspect-ratio:16/9; background:#000;"><iframe width="100%" height="100%" src="https://www.youtube.com/embed/QpgZKwFOAac" frameborder="0" allowfullscreen style="position:absolute; top:0; left:0; width:100%; height:100%;"></iframe></div></div></div></div>
+</div></section></div>
+<section id="stats"><div class="section-header"><h2 class="section-title">個人成績</h2><span class="section-en">Player Stats</span></div><div class="stats-grid"><div class="stats-card"><div class="stats-card-header"><span class="stats-icon">⚽</span><span class="stats-card-title">得点ランキング</span></div><table class="player-table"><thead><tr><th>#</th><th>選手名</th><th>G</th></tr></thead><tbody><tr class="top-player"><td class="rank-col">1</td><td class="player-name">奥隅⑰</td><td class="player-stat">6</td></tr>
+<tr class=""><td class="rank-col">2</td><td class="player-name">下仮屋⑳</td><td class="player-stat">4</td></tr>
+<tr class=""><td class="rank-col">3</td><td class="player-name">島田㉓</td><td class="player-stat">2</td></tr>
+<tr class=""><td class="rank-col">4</td><td class="player-name">田中⑤</td><td class="player-stat">1</td></tr>
+<tr class=""><td class="rank-col">5</td><td class="player-name">坂野⑱</td><td class="player-stat">1</td></tr>
+<tr class=""><td class="rank-col">6</td><td class="player-name">オウンゴール</td><td class="player-stat">1</td></tr>
+</tbody></table></div><div class="stats-card"><div class="stats-card-header"><span class="stats-icon">🅰️</span><span class="stats-card-title">アシストランキング</span></div><table class="player-table"><thead><tr><th>#</th><th>選手名</th><th>A</th></tr></thead><tbody></tbody></table></div></div></section>
+<div class="standings-section" id="archives"><section><div class="section-header"><h2 class="section-title">過去のデータ</h2><span class="section-en">Archives</span></div><div class="archive-grid"><a class="archive-card" href="pdf/enjoy-results.pdf" target="_blank" rel="noopener"><span class="archive-icon">PDF</span><span><strong>エンジョイ対戦成績表</strong><small>過去の成績・記録を見る</small></span><span class="archive-arrow">↗</span></a><a class="archive-card" href="https://docs.google.com/spreadsheets/d/19c0XphsmiWWCBL3dnfpe1VEwIDL1l2DYKZgCTUUrqKM/edit?usp=sharing" target="_blank" rel="noopener"><span class="archive-icon">PDF</span><span><strong>2011年-2026年個人ゴール</strong><small>過去の成績・記録を見る</small></span><span class="archive-arrow">↗</span></a><a class="archive-card" href="pdf/2025-results.pdf" target="_blank" rel="noopener"><span class="archive-icon">PDF</span><span><strong>2025年</strong><small>過去の成績・記録を見る</small></span><span class="archive-arrow">↗</span></a><a class="archive-card" href="pdf/2024-results.pdf" target="_blank" rel="noopener"><span class="archive-icon">PDF</span><span><strong>2024年</strong><small>過去の成績・記録を見る</small></span><span class="archive-arrow">↗</span></a><a class="archive-card" href="pdf/2023-results.pdf" target="_blank" rel="noopener"><span class="archive-icon">PDF</span><span><strong>2023年</strong><small>過去の成績・記録を見る</small></span><span class="archive-arrow">↗</span></a><a class="archive-card" href="pdf/2022-results.pdf" target="_blank" rel="noopener"><span class="archive-icon">PDF</span><span><strong>2022年</strong><small>過去の成績・記録を見る</small></span><span class="archive-arrow">↗</span></a><a class="archive-card" href="pdf/2021-results.pdf" target="_blank" rel="noopener"><span class="archive-icon">PDF</span><span><strong>2021年</strong><small>過去の成績・記録を見る</small></span><span class="archive-arrow">↗</span></a><a class="archive-card" href="pdf/2020-results.pdf" target="_blank" rel="noopener"><span class="archive-icon">PDF</span><span><strong>2020年</strong><small>過去の成績・記録を見る</small></span><span class="archive-arrow">↗</span></a><a class="archive-card" href="pdf/2019-results.pdf" target="_blank" rel="noopener"><span class="archive-icon">PDF</span><span><strong>2019年</strong><small>過去の成績・記録を見る</small></span><span class="archive-arrow">↗</span></a><a class="archive-card" href="pdf/2018-results.pdf" target="_blank" rel="noopener"><span class="archive-icon">PDF</span><span><strong>2018年</strong><small>過去の成績・記録を見る</small></span><span class="archive-arrow">↗</span></a><a class="archive-card" href="pdf/2017-results.pdf" target="_blank" rel="noopener"><span class="archive-icon">PDF</span><span><strong>2017年</strong><small>過去の成績・記録を見る</small></span><span class="archive-arrow">↗</span></a><a class="archive-card" href="pdf/2016-results.pdf" target="_blank" rel="noopener"><span class="archive-icon">PDF</span><span><strong>2016年</strong><small>過去の成績・記録を見る</small></span><span class="archive-arrow">↗</span></a><a class="archive-card" href="pdf/2015-results.pdf" target="_blank" rel="noopener"><span class="archive-icon">PDF</span><span><strong>2015年</strong><small>過去の成績・記録を見る</small></span><span class="archive-arrow">↗</span></a><a class="archive-card" href="pdf/2014-results.pdf" target="_blank" rel="noopener"><span class="archive-icon">PDF</span><span><strong>2014年</strong><small>過去の成績・記録を見る</small></span><span class="archive-arrow">↗</span></a><a class="archive-card" href="pdf/2013-results.pdf" target="_blank" rel="noopener"><span class="archive-icon">PDF</span><span><strong>2013年</strong><small>過去の成績・記録を見る</small></span><span class="archive-arrow">↗</span></a><a class="archive-card" href="pdf/2012-results.pdf" target="_blank" rel="noopener"><span class="archive-icon">PDF</span><span><strong>2012年</strong><small>過去の成績・記録を見る</small></span><span class="archive-arrow">↗</span></a><a class="archive-card" href="pdf/2011-results.pdf" target="_blank" rel="noopener"><span class="archive-icon">PDF</span><span><strong>2011年</strong><small>過去の成績・記録を見る</small></span><span class="archive-arrow">↗</span></a></div></section></div>
 <footer><div class="footer-logo">SUNFIRES</div><p>© 2026 SUNFIRES — All Rights Reserved</p></footer>
 </body>
-</html>`;
-
-  const blob = new Blob([out], { type: 'text/html' });
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = 'index.html'; 
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-}
-['hero-played','hero-wins','hero-goals','hero-rank'].forEach(id=>$(id).addEventListener('change',()=>{syncHero();save()}));updatePreview();
-</script>
-</body></html>
+</html>
